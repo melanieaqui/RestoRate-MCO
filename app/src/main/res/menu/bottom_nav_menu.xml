@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/ic_home"/>
+    <item
+        android:id="@+id/bookmark"
+        android:title="Bookmarks"
+        android:icon="@drawable/ic_bookmark"/>
+
+    <item
+        android:id="@+id/add"
+        android:title="RestoAdd"
+        android:icon="@drawable/ic_add"/>
+
+    <item
+        android:id="@+id/review"
+        android:title="RestoReview"
+        android:icon="@drawable/ic_review"/>
+
+    <item
+        android:id="@+id/profile"
+        android:title="Profile"
+        android:icon="@drawable/ic_profile"/>
+
+</menu>

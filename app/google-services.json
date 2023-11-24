@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "908764991581",
+    "project_id": "mobdeve-restorate",
+    "storage_bucket": "mobdeve-restorate.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908764991581:android:778fac493b963d7c937db4",
+        "android_client_info": {
+          "package_name": "com.mobdeve.s17.aquino.melanie.restorate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiFsJTYhz_WnOCEjQOrsew03mvAe6eSM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
