@@ -1,10 +1,20 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
+
+import static java.lang.String.valueOf;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +28,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +38,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +49,7 @@ public class AddRestoActivity extends AppCompatActivity {
     EditText txt_restoname;
     Button btn_submitted;
     Button btn_choose;
+    Button btn_take;
     ImageView img_resto;
     private Uri imageUri = null;
 
@@ -46,11 +59,14 @@ public class AddRestoActivity extends AppCompatActivity {
     /* Handles the return intent from the image selector. Stores the imageUri and extracts the image
      * and inserts it into the ImageView.
      * */
+
+
     private ActivityResultLauncher<Intent> myActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
+                    Log.i("OUT",valueOf(result.getData().getData()));
                     if (result.getResultCode() == Activity.RESULT_OK){
                         try {
                             if(result.getData() != null) {
@@ -62,6 +78,16 @@ public class AddRestoActivity extends AppCompatActivity {
                         }
                     }
                 }
+               /* public void onActivityResult(int requestCode, int resultCode, Intent data) {
+                    if (requestCode == 1888 && resultCode == Activity.RESULT_OK) {
+                        Bitmap photo = (Bitmap) data.getExtras().get("data");
+                        img_resto.setImageBitmap(photo);
+                    }
+                }*/
+
+
+
+
             });
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +96,7 @@ public class AddRestoActivity extends AppCompatActivity {
         txt_food_type = findViewById(R.id.txt_food_type);
         txt_restoname = findViewById(R.id.txt_restoname);
         btn_choose= findViewById(R.id.btn_choose);
+        btn_take = findViewById(R.id.btn_take);
         img_resto = findViewById(R.id.img_resto);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
@@ -85,7 +112,38 @@ public class AddRestoActivity extends AppCompatActivity {
                 myActivityResultLauncher.launch(Intent.createChooser(i, "Select Picture"));
             }
         });
+
+        btn_take.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent();
+                //cameraIntent.setType("image/*");
+                cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                File imagesFolder = new File(Environment.getExternalStorageDirectory(), "MyImages");
+                imagesFolder.mkdirs(); // <----
+                File image = new File(imagesFolder, txt_restoname+".jpg");
+                Uri uriSavedImage = Uri.fromFile(image);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage)   ;             //cameraIntent.putExtra("REQ_CODE",1888);
+                //cameraIntent.setAction()
+               // startActivityForResult(cameraIntent, 1888);
+               myActivityResultLauncher.launch(cameraIntent);
+
+
+                //myActivityResultLauncher.launch(Intent.createChooser(cameraIntent,1888));
+            }
+
+
+        });
+
     }
+
+
+
+
+
+
 
     public void submit(View v){
         // Create a new user with a first and last name
