@@ -30,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,6 +40,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +55,7 @@ public class AddRestoActivity extends AppCompatActivity {
     Button btn_choose;
     Button btn_take;
     ImageView img_resto;
+    String currentPhotoPath;
     private Uri imageUri = null;
 
     // A reference for a dialog box (for uploading progress)
@@ -66,36 +71,34 @@ public class AddRestoActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    Log.i("OUT",valueOf(result.getData().getData()));
-                    if (result.getResultCode() == Activity.RESULT_OK){
+                   // Log.i("OUT", valueOf(imageUri));
+                    if (result.getResultCode() == Activity.RESULT_OK) {
                         try {
-                            if(result.getData() != null) {
+                            if (result.getData() != null) {
+
                                 imageUri = result.getData().getData();
+                                Log.i("OUT", valueOf(imageUri));
+
+                                // Bitmap photo = (Bitmap) result.getData().getExtras().get("data");
+                                //img_resto.setImageBitmap(photo);
                                 Picasso.with(AddRestoActivity.this).load(imageUri).into(img_resto);
                             }
-                        } catch(Exception exception){
-                            Log.d("TAG",""+exception.getLocalizedMessage());
+                        } catch (Exception exception) {
+                            Log.d("TAG", "" + exception.getLocalizedMessage());
                         }
                     }
                 }
-               /* public void onActivityResult(int requestCode, int resultCode, Intent data) {
-                    if (requestCode == 1888 && resultCode == Activity.RESULT_OK) {
-                        Bitmap photo = (Bitmap) data.getExtras().get("data");
-                        img_resto.setImageBitmap(photo);
-                    }
-                }*/
-
-
 
 
             });
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_resto);
         btn_submitted = findViewById(R.id.btn_submit);
         txt_food_type = findViewById(R.id.txt_food_type);
         txt_restoname = findViewById(R.id.txt_restoname);
-        btn_choose= findViewById(R.id.btn_choose);
+        btn_choose = findViewById(R.id.btn_choose);
         btn_take = findViewById(R.id.btn_take);
         img_resto = findViewById(R.id.img_resto);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -114,35 +117,64 @@ public class AddRestoActivity extends AppCompatActivity {
         });
 
         btn_take.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v){
+                Intent takePictureIntent = new Intent();
+                Log.i("MEssage", "I am at takepicture");
+                takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                    Log.i("MEssage", "try");
 
-            @Override
-            public void onClick(View v) {
-                Intent cameraIntent = new Intent();
-                //cameraIntent.setType("image/*");
-                cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                } catch (IOException ex) {
+                    // Error occurred wh
+                    Log.i("MEssage", "catch");
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    imageUri = FileProvider.getUriForFile(AddRestoActivity.this,
+                            "com.example.android.fileprovider",
+                            photoFile);
+                    //Log.i("URI",valueOf(this.photoURI));
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    takePictureIntent.putExtra("REQ_CODE",1888);
+                    Log.i("URI",valueOf(imageUri));
 
-                File imagesFolder = new File(Environment.getExternalStorageDirectory(), "MyImages");
-                imagesFolder.mkdirs(); // <----
-                File image = new File(imagesFolder, txt_restoname+".jpg");
-                Uri uriSavedImage = Uri.fromFile(image);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage)   ;             //cameraIntent.putExtra("REQ_CODE",1888);
-                //cameraIntent.setAction()
-               // startActivityForResult(cameraIntent, 1888);
-               myActivityResultLauncher.launch(cameraIntent);
-
-
-                //myActivityResultLauncher.launch(Intent.createChooser(cameraIntent,1888));
+                    startActivityForResult(takePictureIntent, 1888);
+                }
             }
 
+            String currentPhotoPath;
+
+            private File createImageFile() throws IOException {
+                // Create an image file name
+                Log.i("MEssage", "creating image");
+
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                String imageFileName = "PNG_" + timeStamp + "_" + txt_restoname.getText().toString();
+                File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File image = File.createTempFile(
+                        imageFileName,  /* prefix */
+                        ".png",         /* suffix */
+                        storageDir      /* directory */
+                );
+
+                // Save a file: path for use with ACTION_VIEW intents
+                currentPhotoPath = image.getAbsolutePath();
+                return image;
+            }
 
         });
 
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == 1888 && resultCode == Activity.RESULT_OK) {
 
-
-
-
+            Picasso.with(AddRestoActivity.this).load(imageUri).into(img_resto);
+        }
+    }
 
 
     public void submit(View v){
@@ -150,7 +182,7 @@ public class AddRestoActivity extends AppCompatActivity {
         Map<String, Object> restaurant = new HashMap<>();
         restaurant.put("name", txt_restoname.getText().toString());
         restaurant.put("food_type", txt_food_type.getText().toString());
-        //user.put("born", 1815);
+        restaurant.put("image",img_resto.getDrawable());
 
 // Add a new document with a generated ID
         db.collection("restaurant")
