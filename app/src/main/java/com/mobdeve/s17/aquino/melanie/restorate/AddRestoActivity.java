@@ -72,16 +72,17 @@ public class AddRestoActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                    // Log.i("OUT", valueOf(imageUri));
-                    if (result.getResultCode() == Activity.RESULT_OK) {
+                    if(imageUri!= null){
+                        Picasso.with(AddRestoActivity.this).load(imageUri).into(img_resto);
+                        btn_submitted.setVisibility(View.VISIBLE);
+                    }
+                    else if (result.getResultCode() == Activity.RESULT_OK) {
                         try {
                             if (result.getData() != null) {
-
                                 imageUri = result.getData().getData();
-                                Log.i("OUT", valueOf(imageUri));
-
-                                // Bitmap photo = (Bitmap) result.getData().getExtras().get("data");
-                                //img_resto.setImageBitmap(photo);
                                 Picasso.with(AddRestoActivity.this).load(imageUri).into(img_resto);
+                                btn_submitted.setVisibility(View.VISIBLE);
+
                             }
                         } catch (Exception exception) {
                             Log.d("TAG", "" + exception.getLocalizedMessage());
@@ -109,6 +110,8 @@ public class AddRestoActivity extends AppCompatActivity {
         btn_choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                imageUri =null;
+
                 Intent i = new Intent();
                 i.setType("image/*");
                 i.setAction(Intent.ACTION_OPEN_DOCUMENT);
@@ -118,7 +121,9 @@ public class AddRestoActivity extends AppCompatActivity {
 
         btn_take.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
+                imageUri =null;
                 Intent takePictureIntent = new Intent();
+
                 Log.i("MEssage", "I am at takepicture");
                 takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
                 File photoFile = null;
@@ -137,17 +142,19 @@ public class AddRestoActivity extends AppCompatActivity {
                             photoFile);
                     //Log.i("URI",valueOf(this.photoURI));
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    takePictureIntent.putExtra("REQ_CODE",1888);
-                    Log.i("URI",valueOf(imageUri));
+                    //takePictureIntent.putExtra("REQ_CODE",1888);
+                    //Log.i("URI",valueOf(imageUri));
+                    myActivityResultLauncher.launch(Intent.createChooser(takePictureIntent, "Select Picture"));
 
-                    startActivityForResult(takePictureIntent, 1888);
+                    //startActivityForResult(takePictureIntent, 1888);
                 }
             }
 
-            String currentPhotoPath;
 
             private File createImageFile() throws IOException {
                 // Create an image file name
+                String currentPhotoPath;
+
                 Log.i("MEssage", "creating image");
 
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -167,15 +174,6 @@ public class AddRestoActivity extends AppCompatActivity {
         });
 
     }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-        if (requestCode == 1888 && resultCode == Activity.RESULT_OK) {
-
-            Picasso.with(AddRestoActivity.this).load(imageUri).into(img_resto);
-        }
-    }
-
 
     public void submit(View v){
         // Create a new user with a first and last name
