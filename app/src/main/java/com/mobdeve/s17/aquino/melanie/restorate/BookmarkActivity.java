@@ -22,14 +22,14 @@ public class BookmarkActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
-        RestoData[] myRestoData = new RestoData[]{
-                new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
-                new RestoData("Mang Inasal","Grilled Foods",R.drawable.manginasal,7.4),
+        //RestoData[] myRestoData = new RestoData[]{
+        //        new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
+        //        new RestoData("Mang Inasal","Grilled Foods",R.drawable.manginasal,7.4),
 
-        };
+       // };
 
-        RestoAdapter myRestoAdapter = new RestoAdapter(myRestoData,BookmarkActivity.this);
-        recyclerView.setAdapter(myRestoAdapter);
+        //RestoAdapter myRestoAdapter = new RestoAdapter(myRestoData,BookmarkActivity.this);
+        //recyclerView.setAdapter(myRestoAdapter);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);

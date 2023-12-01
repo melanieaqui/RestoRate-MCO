@@ -10,6 +10,8 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity  {
@@ -26,23 +28,32 @@ public class MainActivity extends AppCompatActivity  {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RestoData[] myRestoData = new RestoData[]{
+        /*RestoData[] myRestoData = new RestoData[]{
                 new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
                 new RestoData("ChowKing","Chinese Inspired Foods.",R.drawable.chowking,9.7),
                 new RestoData("Mang Inasal","Grilled Foods",R.drawable.manginasal,7.4),
                 new RestoData("Greewnwich","Pizza and Pasta",R.drawable.greenwich,6.4),
 
-        };
+        };*/
 
-        RestoAdapter myRestoAdapter = new RestoAdapter(myRestoData,MainActivity.this);
-        recyclerView.setAdapter(myRestoAdapter);
+        //RestoAdapter myRestoAdapter = new RestoAdapter(myRestoData,MainActivity.this);
+       // recyclerView.setAdapter(myRestoAdapter);
 
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
 
         bottomNavigationView.setSelectedItemId(R.id.home);
     }
 
-
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser == null){
+            Intent logged = new Intent (getApplicationContext(), LoginActivity.class);
+            startActivity(logged);
+            finish();
+        }
+    }
 
     private boolean onItemSelectedListener(MenuItem item) {
         Intent intent;

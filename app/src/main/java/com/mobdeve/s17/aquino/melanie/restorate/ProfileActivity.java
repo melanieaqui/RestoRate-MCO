@@ -4,24 +4,39 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
-
+    TextView txt_user_name;
+    ImageView img_prof_img;
+    TextView txt_email_display;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        txt_user_name = findViewById(R.id.txt_user_name);
+        txt_email_display =findViewById(R.id.txt_email_display);
+        img_prof_img =findViewById(R.id.img_prof_img);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
+        if (user!=null){
+            txt_user_name.setText(user.getDisplayName());
+            txt_email_display.setText(user.getEmail());
+            if(user.getPhotoUrl()!=null)
+                img_prof_img.setImageURI(user.getPhotoUrl());
+            bottomNavigationView.setSelectedItemId(R.id.profile);
+
+        }
 
 
-        bottomNavigationView.setSelectedItemId(R.id.profile);
     }
     public void logout (View v){
         FirebaseAuth.getInstance().signOut();

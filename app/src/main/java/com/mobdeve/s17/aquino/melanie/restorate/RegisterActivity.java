@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
 public class RegisterActivity extends AppCompatActivity {
     EditText txt_name;
     EditText txt_email;
@@ -61,8 +63,6 @@ public class RegisterActivity extends AppCompatActivity {
       }
   }
 
-
-
     public void register(View v) {
         this.email= txt_email.getText().toString();
         this.pass= txt_pass.getText().toString();
@@ -75,7 +75,6 @@ public class RegisterActivity extends AppCompatActivity {
         }else if(!(pass.equals(confirm))){
             textInputLayout_confirm.setError("Password not match");
             txt_confirm_pass.setText("");
-
 
         }
         else{
@@ -104,16 +103,28 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    public void login_redirect(View v){
-        Intent log = new Intent(RegisterActivity.this, LoginActivity.class);
+    public void redirect(View v){
+        Intent log = new Intent(RegisterActivity.this, UploadImageProfile.class);
         startActivity(log);
     }
     private void updateUI(FirebaseUser user, View v) {
         if (user!=null){
-            login_redirect(v);
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(txt_name.getText().toString()).build();
+
+            user.updateProfile(profileUpdates)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("UPDATED", "User profile updated.");
+                            }
+                        }
+                    });
+            redirect(v);
 
         }
-        else {
+       else {
             txt_name.setText("");
             txt_pass.setText("");
             txt_confirm_pass.setText("");

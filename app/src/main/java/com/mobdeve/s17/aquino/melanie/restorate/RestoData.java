@@ -3,9 +3,9 @@ package com.mobdeve.s17.aquino.melanie.restorate;
 public class RestoData {
     String restoName;
     String restoType;
-    Integer image;
+    String image;
     double rating;
-    public RestoData(String restoName, String restoType, int image, double rating) {
+    public RestoData(String restoName, String restoType, String image, double rating) {
         this.restoName = restoName;
         this.restoType = restoType;
         this.image = image;
@@ -20,7 +20,7 @@ public class RestoData {
         return this.restoType;
     }
 
-    public int getImage(){
+    public String getImage(){
         return this.image;
     }
     public double getRating(){

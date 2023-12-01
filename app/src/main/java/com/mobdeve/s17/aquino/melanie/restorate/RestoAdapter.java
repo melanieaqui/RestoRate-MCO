@@ -35,7 +35,7 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
         holder.restoName.setText(RestoDataList.getName());
         holder.restoType.setText(RestoDataList.getType());
         holder.restoRating.setText("Qty: "+RestoDataList.getRating());
-        holder.restoImage.setImageResource(RestoDataList.getImage());
+       // holder.restoImage.setImageResource(RestoDataList.getImage());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             /* TODO Call an intent for OrderActivity allowing you to order food */

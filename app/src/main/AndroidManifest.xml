@@ -53,6 +53,11 @@
             android:name=".BookmarkActivity"
             android:exported="false">
         </activity>
+
+        <activity
+            android:name=".UploadImageProfile"
+            android:exported = "false">
+        </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
