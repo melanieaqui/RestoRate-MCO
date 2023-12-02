@@ -34,8 +34,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentReference;
@@ -66,6 +69,7 @@ public class AddRestoActivity extends AppCompatActivity {
     TextInputLayout textInputLayer_name;
     TextInputLayout textInputLayout_food;
     String currentPhotoPath;
+    Uri downloadUri;
   //  FirebaseStorage storage;
 
     private Uri imageUri = null;
@@ -143,24 +147,17 @@ public class AddRestoActivity extends AppCompatActivity {
                 File photoFile = null;
                 try {
                     photoFile = createImageFile();
-                    Log.i("MEssage", "try");
 
                 } catch (IOException ex) {
                     // Error occurred wh
-                    Log.i("MEssage", "catch");
                 }
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
                     imageUri = FileProvider.getUriForFile(AddRestoActivity.this,
                             "com.example.android.fileprovider",
                             photoFile);
-                    //Log.i("URI",valueOf(this.photoURI));
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    //takePictureIntent.putExtra("REQ_CODE",1888);
-                    //Log.i("URI",valueOf(imageUri));
                     myActivityResultLauncher.launch(Intent.createChooser(takePictureIntent, "Select Picture"));
-
-                    //startActivityForResult(takePictureIntent, 1888);
                 }
             }
 
@@ -188,11 +185,11 @@ public class AddRestoActivity extends AppCompatActivity {
         });
 
     }
-    protected boolean allFilled(){
-        if(txt_restoname.getText().toString()==""){
+    public boolean allFilled(){
+        if(txt_restoname.getText().toString().isEmpty()){
             textInputLayer_name.setError("Restaurant Name must be filled");
             return false;
-        }if(txt_food_type.getText().toString()==""){
+        }if(txt_food_type.getText().toString().isEmpty()){
             textInputLayout_food.setError("Food Type must be filled");
             return false;
         }
@@ -212,58 +209,43 @@ public class AddRestoActivity extends AppCompatActivity {
            // progressDialog.show();
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
-
-            StorageReference storageRef = storage.getReference();
-
-            StorageReference RestoImagesRef = storageRef.child(imageUri.getPath());
-            img_resto.setDrawingCacheEnabled(true);
-            img_resto.buildDrawingCache();
-            Bitmap bitmap = ((BitmapDrawable) img_resto.getDrawable()).getBitmap();
+            StorageReference storageRef = (storage.getReference());
+            StorageReference RestoImagesRef = storageRef.child("resto_images/"+imageUri);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] data = baos.toByteArray();
-
             UploadTask uploadTask = RestoImagesRef.putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    Log.i("Unsuccessful",valueOf(exception));
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                    Log.i("successful","Success");
-
-                    // ...
-                }
-            });
-
-            StorageReference riversRef = storageRef.child("resto_images/"+imageUri.getLastPathSegment());
-            uploadTask = riversRef.putFile(imageUri);
+            StorageReference RestoRef = storageRef.child("resto_images/"+imageUri.getLastPathSegment());
+            uploadTask = RestoImagesRef.putFile(imageUri);
 
             // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener(new OnFailureListener() {
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Continue with the task to get the download URL
+                    return RestoImagesRef.getDownloadUrl();
                 }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                    // ...
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        downloadUri = task.getResult();
+                    } else {
+                        // Handle failures
+                        // ...
+                    }
                 }
             });
 
+           //Log.i("URI", downloadUri.toString());
 
             Map<String, Object> restaurant = new HashMap<>();
             restaurant.put("name", txt_restoname.getText().toString());
             restaurant.put("food_type", txt_food_type.getText().toString());
-           // restaurant.put("image",img_resto.getDrawable());
-
-// Add a new document with a generated ID
+            restaurant.put("image",downloadUri);
             db.collection("restaurant")
                     .add(restaurant)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -278,6 +260,9 @@ public class AddRestoActivity extends AppCompatActivity {
                             Log.w("Failure", "Error adding document", e);
                         }
                     });
+            Intent back =new Intent(getApplicationContext(),MainActivity.class);
+            startActivity(back);
+            finish();
 
         }
         else if(imageUri==null) {
@@ -285,6 +270,12 @@ public class AddRestoActivity extends AppCompatActivity {
             Toast.makeText(
                     AddRestoActivity.this,
                     "Please supply an image to add restaurant",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }else if(allFilled()==false){
+            Toast.makeText(
+                    AddRestoActivity.this,
+                    "Please Fill up all fields",
                     Toast.LENGTH_SHORT
             ).show();
         }
