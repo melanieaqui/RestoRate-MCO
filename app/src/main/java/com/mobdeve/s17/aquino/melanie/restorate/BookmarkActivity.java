@@ -2,16 +2,29 @@ package com.mobdeve.s17.aquino.melanie.restorate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 
 public class BookmarkActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
+    RestoAdapter bRestoAdapter;
+    ArrayList<RestoData> RestaurantArrayList = new ArrayList<>();
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +34,7 @@ public class BookmarkActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        db = FirebaseFirestore.getInstance();
 
         //RestoData[] myRestoData = new RestoData[]{
         //        new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
@@ -28,8 +42,8 @@ public class BookmarkActivity extends AppCompatActivity {
 
        // };
 
-        //RestoAdapter myRestoAdapter = new RestoAdapter(myRestoData,BookmarkActivity.this);
-        //recyclerView.setAdapter(myRestoAdapter);
+        bRestoAdapter = new RestoAdapter(RestaurantArrayList,BookmarkActivity.this);
+        recyclerView.setAdapter(bRestoAdapter);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
@@ -37,6 +51,24 @@ public class BookmarkActivity extends AppCompatActivity {
 
         bottomNavigationView.setSelectedItemId(R.id.bookmark);
     }
+    private void EventChange() {
+        db.collection("bookmarks").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(error!=null){
+                    Log.e("Error",error.getMessage());
+                    return;
+                }
+                for(DocumentChange dc : value.getDocumentChanges()){
+                    if(dc.getType()==DocumentChange.Type.ADDED){
+                        RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
+                    }
+                }
+                bRestoAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
 
     private boolean onItemSelectedListener(MenuItem item) {
         Intent intent;

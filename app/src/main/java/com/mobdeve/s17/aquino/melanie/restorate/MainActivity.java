@@ -1,22 +1,43 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
     BottomNavigationView bottomNavigationView;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ArrayList<RestoData>RestaurantArrayList = new ArrayList<>();
+    RecyclerView recyclerView;
+    RestoAdapter myRestoAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +45,13 @@ public class MainActivity extends AppCompatActivity  {
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        RecyclerView recyclerView = findViewById(R.id.main_recyclerView);
+        recyclerView = findViewById(R.id.main_recyclerView);
+        db = FirebaseFirestore.getInstance();
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        myRestoAdapter = new RestoAdapter(RestaurantArrayList,MainActivity.this);
 
+        EventChange();
         /*RestoData[] myRestoData = new RestoData[]{
                 new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
                 new RestoData("ChowKing","Chinese Inspired Foods.",R.drawable.chowking,9.7),
@@ -35,14 +59,32 @@ public class MainActivity extends AppCompatActivity  {
                 new RestoData("Greewnwich","Pizza and Pasta",R.drawable.greenwich,6.4),
 
         };*/
-
-        //RestoAdapter myRestoAdapter = new RestoAdapter(myRestoData,MainActivity.this);
-       // recyclerView.setAdapter(myRestoAdapter);
+        recyclerView.setAdapter(myRestoAdapter);
 
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
 
         bottomNavigationView.setSelectedItemId(R.id.home);
+
     }
+
+    private void EventChange() {
+        db.collection("restaurant").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(error!=null){
+                    Log.e("Error",error.getMessage());
+                    return;
+                }
+                for(DocumentChange dc : value.getDocumentChanges()){
+                    if(dc.getType()==DocumentChange.Type.ADDED){
+                        RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
+                    }
+                }
+                myRestoAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
 
     public void onStart() {
         super.onStart();

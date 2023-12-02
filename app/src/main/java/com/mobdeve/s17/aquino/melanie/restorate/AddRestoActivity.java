@@ -41,8 +41,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -240,8 +242,6 @@ public class AddRestoActivity extends AppCompatActivity {
                 }
             });
 
-           //Log.i("URI", downloadUri.toString());
-
             Map<String, Object> restaurant = new HashMap<>();
             restaurant.put("name", txt_restoname.getText().toString());
             restaurant.put("food_type", txt_food_type.getText().toString());
@@ -260,9 +260,9 @@ public class AddRestoActivity extends AppCompatActivity {
                             Log.w("Failure", "Error adding document", e);
                         }
                     });
-            Intent back =new Intent(getApplicationContext(),MainActivity.class);
-            startActivity(back);
-            finish();
+            //Intent back =new Intent(getApplicationContext(),MainActivity.class);
+            //startActivity(back);
+            //finish();
 
         }
         else if(imageUri==null) {
@@ -281,6 +281,15 @@ public class AddRestoActivity extends AppCompatActivity {
         }
 
 
+    }
+    private boolean restoExist(){
+        CollectionReference RestoRef = db.collection("restaurant");
+        Query query = RestoRef.whereEqualTo("name", txt_restoname.getText().toString());
+        if (query!=null){
+            textInputLayer_name.setError("Restaurant Name Already Exists");
+            return true;
+        }
+        return false;
     }
     private boolean onItemSelectedListener(MenuItem item) {
         Intent intent;

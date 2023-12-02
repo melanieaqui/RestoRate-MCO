@@ -1,23 +1,30 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
 public class RestoData {
-    String restoName;
-    String restoType;
+    String name;
+    String food_type;
     String image;
-    double rating;
-    public RestoData(String restoName, String restoType, String image, double rating) {
-        this.restoName = restoName;
-        this.restoType = restoType;
+    double rating=0.0;
+    public RestoData(){}
+    public RestoData(String food_type, String name, String image,double rating) {
+        this.name = name;
+        this.food_type = food_type;
         this.image = image;
         this.rating= rating;
 
     }
+    public RestoData(String food_type, String name, String image) {
+        this.name = name;
+        this.food_type = food_type;
+        this.image = image;
+
+    }
     public String getName(){
-        return this.restoName;
+        return this.name;
     }
 
     public String getType(){
-        return this.restoType;
+        return this.food_type;
     }
 
     public String getImage(){
