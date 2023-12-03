@@ -3,20 +3,31 @@ package com.mobdeve.s17.aquino.melanie.restorate;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHolder> {
-    com.mobdeve.s17.aquino.melanie.restorate.ReviewsData[] ReviewsData;
+    ArrayList<ReviewsData> reviewsData;
     Context context;
-    public ReviewsAdapter(com.mobdeve.s17.aquino.melanie.restorate.ReviewsData[] ReviewsData, Activity activity) {
-        this.ReviewsData = ReviewsData;
+    public ReviewsAdapter(ArrayList<ReviewsData>  reviewsData, Activity activity) {
+        this.reviewsData = reviewsData;
         this.context = activity;
     }
     @NonNull
@@ -30,15 +41,23 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ReviewsAdapter.ViewHolder holder, int position) {
-        final ReviewsData ReviewsDataList = ReviewsData[position];
-        holder.reviews_user.setText(ReviewsDataList.getUser().getEmail());
-        //holder.reviews_user_image.setImageResource(ReviewsDataList.getUser().getProfile());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        final ReviewsData ReviewsDataList = reviewsData.get(position);
+        holder.reviews_user.setText(ReviewsDataList.getUsername());
 
         holder.reviews_location.setText(ReviewsDataList.getLoc());
         holder.reviews_quality.setText("Qty: "+ReviewsDataList.getQuality());
         holder.reviews_service.setText("Service: "+ReviewsDataList.getService());
-        holder.reviews_environment.setText("Environment: "+ReviewsDataList.getEnv());
-        holder.reviews_overall.setText("Overall: "+ReviewsDataList.getOverall());
+        holder.reviews_environment.setText("Environment: "+ReviewsDataList.getEnvironment());
+        holder.reviews_overall.setRating(ReviewsDataList.getOverall());
+
+        if(ReviewsDataList.getImage()!=null)
+            Picasso.with(context).load(Uri.parse(ReviewsDataList.getUserImg())).into(holder.reviews_user_image);
+        else
+            holder.reviews_user_image.setImageResource(R.drawable.ic_profile);
+        if(ReviewsDataList.getImage()!=null)
+            Picasso.with(context).load(Uri.parse(ReviewsDataList.getImage())).into(holder.reviews_image);
 
         //holder.reviews_image.setImageResource(ReviewsDataList.getImage());
 
@@ -54,10 +73,11 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
             }
         });*/
+
     }
 
     public int getItemCount() {
-        return ReviewsData.length;
+        return reviewsData.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -68,7 +88,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         TextView reviews_quality;
         TextView reviews_service;
         TextView reviews_environment;
-        TextView reviews_overall;
+        RatingBar reviews_overall;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,7 +100,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
             reviews_quality = itemView.findViewById(R.id.txt_food);
             reviews_service = itemView.findViewById(R.id.txt_service);
             reviews_environment = itemView.findViewById(R.id.txt_environment);
-            reviews_overall = itemView.findViewById(R.id.txt_overall);
+            reviews_overall = itemView.findViewById(R.id.ratingBar);
 
 
 

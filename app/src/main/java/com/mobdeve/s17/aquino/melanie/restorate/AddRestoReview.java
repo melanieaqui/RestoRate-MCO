@@ -1,6 +1,7 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -32,14 +33,15 @@ public class AddRestoReview extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
     EditText txt_resto_name;
     EditText txt_review_env;
     EditText txt_review_service;
     EditText txt_food_quality;
+    EditText txt_branch;
     RatingBar rating_star;
     TextInputLayout textInputLayer_name;
     String id;
+    Uri photo;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
@@ -48,6 +50,7 @@ public class AddRestoReview extends AppCompatActivity {
         txt_review_env = findViewById(R.id.txt_review_env);
         txt_review_service = findViewById(R.id.txt_review_service);
         txt_food_quality = findViewById(R.id.txt_food_quality);
+        txt_branch = findViewById(R.id.txt_branch);
         Intent intent=getIntent();
         if(intent!= null && intent.getStringExtra("RESTO_NAME")!=null){
             txt_resto_name.setText(intent.getStringExtra("RESTO_NAME"));
@@ -61,29 +64,56 @@ public class AddRestoReview extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.review);
     }
 
-    public void check(View v){
-        FirestoreHelper.getDocumentByField(db, "restaurants", "name", txt_resto_name.getText().toString().toUpperCase(), new FirestoreHelper.OnDocumentSnapshotListener() {
-            @Override
-            public void onDocumentSnapshot(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot != null && documentSnapshot.exists()) {
-                    // Document exists, and you can access its data
-                    id = documentSnapshot.getId();
-                    Log.d("Firestore", "Document data: " + documentSnapshot.getData());
+    public boolean allfilled(){
+        if (txt_review_env.getText().toString() ==null ||
+                txt_review_service.getText().toString() ==null||
+                txt_branch.getText() ==null ||
+                txt_food_quality.getText().toString()==null)
+            return false;
+        return true;
 
-                } else {
-                    // No document found or there was an error
-                    Log.d("Firestore", "No document found or there was an error");
-                    textInputLayer_name.setError("Restaurant does not exist, consider adding it first");
+    }
+
+    public void check(View v){
+        if(txt_resto_name.getText().toString()!=null){
+            FirestoreHelper.getDocumentByField(db, "restaurants", "name", txt_resto_name.getText().toString().toUpperCase(), new FirestoreHelper.OnDocumentSnapshotListener() {
+                @Override
+                public void onDocumentSnapshot(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        // Document exists, and you can access its data
+                        id = documentSnapshot.getId();
+                        Log.d("Firestore", "Document data: " + documentSnapshot.getData());
+                        if (allfilled())
+                            addReview();
+                    } else {
+                        // No document found or there was an error
+                        Log.d("Firestore", "No document found or there was an error");
+                        textInputLayer_name.setError("Restaurant does not exist, consider adding it first");
+                    }
                 }
-            }
-        });
+            });
+
+        }else{
+            textInputLayer_name.setError("Restaurant name should be filled");
+        }
+
+
     }
     public void addReview(){
         Map<String, Object> reviews = new HashMap<>();
-        reviews.put("user",user.getUid());
-        //if()
-        //reviews.put("")
-        //restaurant.put("name", txt_view_name.getText().toString());
+        reviews.put("username",user.getDisplayName());
+        reviews.put("userimg",user.getPhotoUrl());
+        if(txt_branch.getText().toString()!=null)
+            reviews.put("loc",txt_branch.getText().toString());
+        if(txt_food_quality.getText().toString()!=null)
+            reviews.put("quality",txt_food_quality.getText().toString());
+        if(txt_review_service.getText().toString()!=null)
+            reviews.put("service",txt_review_service.getText().toString());
+        if(txt_review_env.getText().toString()!=null)
+            reviews.put("environment",txt_review_env.getText().toString());
+
+        reviews.put("rating",rating_star.getRating());
+        reviews.put("image",photo);
        // restaurant.put("foodtype", txt_type.getText().toString());
         //restaurant.put("image",restoImage);
 

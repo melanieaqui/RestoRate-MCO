@@ -7,10 +7,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayer_name"
-        android:layout_width="250dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="47dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Title">
 
@@ -23,10 +25,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayer_location"
-        android:layout_width="250dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="76dp"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="47dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="47dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayer_name">
 
@@ -39,10 +43,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayer_service"
-        android:layout_width="250dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="25dp"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="47dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout_food">
 
@@ -55,10 +61,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayer_environment"
-        android:layout_width="250dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="25dp"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="47dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayer_service">
 
@@ -71,10 +79,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout_food"
-        android:layout_width="250dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="47dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="47dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rating_star">
 
@@ -89,11 +99,8 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_submit"
         app:menu="@menu/bottom_nav_menu" />
 
     <TextView
@@ -113,20 +120,33 @@
         android:id="@+id/btn_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="40dp"
-        android:text="Submit"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="60dp"
         android:onClick="check"
+        android:text="Submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayer_environment" />
 
     <RatingBar
         android:id="@+id/rating_star"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="78dp"
+        android:layout_width="241dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="47dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="47dp"
+        android:numStars="5"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayer_location" />
+
+    <Button
+        android:id="@+id/btn_upload_review"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="30dp"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayer_environment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

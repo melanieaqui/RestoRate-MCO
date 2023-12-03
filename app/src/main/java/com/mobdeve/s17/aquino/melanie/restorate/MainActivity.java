@@ -71,8 +71,7 @@ public class MainActivity extends AppCompatActivity  {
                 for(DocumentChange dc : value.getDocumentChanges()){
                     if(dc.getType()==DocumentChange.Type.ADDED){
                        // dc.getDocument().get("")
-                         RestoData data = (dc.getDocument().toObject(RestoData.class));
-                         data.setFoodtype(dc.getDocument().get("foodtype").toString());
+                        RestoData data = (dc.getDocument().toObject(RestoData.class));
                         RestaurantArrayList.add(data);
                     }
                 }

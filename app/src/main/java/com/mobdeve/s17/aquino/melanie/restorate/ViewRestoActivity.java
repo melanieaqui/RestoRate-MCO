@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,10 +21,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +46,9 @@ public class ViewRestoActivity extends AppCompatActivity {
     String restoImage;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
+    ArrayList<ReviewsData> reviewsList = new ArrayList<>();
+    String id;
+    ReviewsAdapter myReviewsAdapter;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_resto);
@@ -68,7 +76,7 @@ public class ViewRestoActivity extends AppCompatActivity {
       //  txt_rating.setText(rating);
         Picasso.with(getApplicationContext()).load(Uri.parse(restoImage)).into(img_photo);
 
-        UserData sample = new UserData("test@gmail.com", R.drawable.jollibee);
+        //UserData sample = new UserData("test@gmail.com", R.drawable.jollibee);
 
        // ReviewsData[] reviewsData = new ReviewsData[]{
         //        new ReviewsData(sample, "Pasig", "Tasty Foods!", "Slow service", "Makalat", "6.7", R.drawable.chickenjoy),
@@ -77,14 +85,59 @@ public class ViewRestoActivity extends AppCompatActivity {
 
         //};
 
-       // ReviewsAdapter myReviewsAdapter = new ReviewsAdapter(reviewsData, this);
-        //recyclerView_reviews.setAdapter(myReviewsAdapter);
+        myReviewsAdapter = new ReviewsAdapter(reviewsList, this);
+        recyclerView_reviews.setAdapter(myReviewsAdapter);
 
-       // bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
-
+        bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
+        check();
 
 
     }
+    public void check(){
+        if(txt_view_name.getText().toString()!=null){
+            FirestoreHelper.getDocumentByField(db, "restaurants", "name", (txt_view_name.getText().toString().toUpperCase()), new FirestoreHelper.OnDocumentSnapshotListener() {
+                @Override
+                public void onDocumentSnapshot(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        // Document exists, and you can access its data
+                        id = documentSnapshot.getId();
+
+                        Log.d("Firestore", "Document data: " + documentSnapshot.getData());
+                        EventChange();
+                    } else {
+                        // No document found or there was an error
+                        Log.d("Firestore", "No document found or there was an error");
+                        //textInputLayer_name.setError("Restaurant does not exist, consider adding it first");
+                    }
+                }
+            });
+           // textInputLayer_name.setError("Restaurant name should be filled");
+
+        }
+
+    }
+
+    private void EventChange() {
+        db.collection("/restaurants/"+id+"/reviews").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(error!=null){
+                    Log.e("Error",error.getMessage());
+                    return;
+                }
+                for(DocumentChange dc : value.getDocumentChanges()){
+                    if(dc.getType()==DocumentChange.Type.ADDED){
+                        // dc.getDocument().get("")
+                        ReviewsData data = (dc.getDocument().toObject(ReviewsData.class));
+                        //data.setFoodtype(dc.getDocument().get("foodtype").toString());
+                        reviewsList.add(data);
+                    }
+                }
+                myReviewsAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
     public void addbookmark(View v){
         Map<String, Object> restaurant = new HashMap<>();
         restaurant.put("name", txt_view_name.getText().toString());
@@ -118,7 +171,7 @@ public class ViewRestoActivity extends AppCompatActivity {
     }
     public void redirect_review(View v){
         Intent intent = new Intent(this,AddRestoReview.class);
-        intent.putExtra("RESTO_NAME","Jollibee"); //temp
+        intent.putExtra("RESTO_NAME",txt_view_name.getText().toString()); //temp
         startActivity(intent);
 
     }

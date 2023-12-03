@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -23,14 +24,17 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         txt_user_name = findViewById(R.id.txt_user_name);
-        txt_email_display =findViewById(R.id.txt_email_display);         img_prof_img =findViewById(R.id.img_prof_img);
+        txt_email_display =findViewById(R.id.txt_email_display);
+        img_prof_img =findViewById(R.id.img_prof_img);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
         if (user!=null){
             txt_user_name.setText(user.getDisplayName());
             txt_email_display.setText(user.getEmail());
             if(user.getPhotoUrl()!=null)
-                img_prof_img.setImageURI(user.getPhotoUrl());
+                Picasso.with(ProfileActivity.this).load(user.getPhotoUrl()).into(img_prof_img);
+            else
+                img_prof_img.setImageResource(R.drawable.ic_profile);
             bottomNavigationView.setSelectedItemId(R.id.profile);
 
         }

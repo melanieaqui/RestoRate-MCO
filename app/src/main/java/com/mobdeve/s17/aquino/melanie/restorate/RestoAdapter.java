@@ -41,7 +41,7 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final RestoData RestoDataList = restoData.get(position);
         holder.restoName.setText(RestoDataList.getName());
-        holder.restoType.setText(RestoDataList.getType());
+        holder.restoType.setText(RestoDataList.getFoodtype());
        // Log.i("get_type result",RestoDataList.getType().toString());
         if (RestoDataList.getImage()!=null)
             Picasso.with(context).load(Uri.parse(RestoDataList.getImage())).into(holder.restoImage);
@@ -55,7 +55,7 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
             public void onClick(View v) {
                 Intent intent = new Intent (context, ViewRestoActivity.class);
                 intent.putExtra("RESTO_NAME",RestoDataList.getName());
-                intent.putExtra("RESTO_TYPE",RestoDataList.getType());
+                intent.putExtra("RESTO_TYPE",RestoDataList.getFoodtype());
                 intent.putExtra("RESTO_IMAGE",RestoDataList.getImage());
                 intent.putExtra("RESTO_RATING",RestoDataList.getRating());
                 context.startActivity(intent);

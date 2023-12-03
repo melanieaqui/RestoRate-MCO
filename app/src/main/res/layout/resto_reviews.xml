@@ -20,7 +20,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
@@ -34,7 +34,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
@@ -42,7 +42,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Username"
-                        android:textSize="16sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -56,37 +56,48 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txt_food"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Food Quality:" />
-
-                    <TextView
-                        android:id="@+id/txt_service"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Service:" />
-
-                    <TextView
-                        android:id="@+id/txt_environment"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Environment:" />
-
-                    <TextView
-                        android:id="@+id/txt_overall"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="Overall Rating:" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/image_review"
                 android:layout_width="match_parent"
-                android:layout_height="157dp"
-                app:srcCompat="@drawable/chickenjoy" />
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_food"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="Food Quality:" />
+
+                <TextView
+                    android:id="@+id/txt_service"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="Service:" />
+
+                <TextView
+                    android:id="@+id/txt_environment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="Environment:" />
+
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:paddingStart="10dp" />
+            </LinearLayout>
 
         </LinearLayout>
 

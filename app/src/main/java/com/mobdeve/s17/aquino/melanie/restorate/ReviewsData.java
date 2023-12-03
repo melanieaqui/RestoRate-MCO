@@ -4,44 +4,47 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class ReviewsData {
     //String name;
-    FirebaseUser user;
+    String username;
     String loc;
     String quality;
-    String overall;
-    String env;
+    float rating;
     String service;
     String image;
+    String userimg;
+    String environment;
 
-
-    public ReviewsData(FirebaseUser user,String loc, String quality,String service,String environment, String overall, String image){
+    public ReviewsData(){}
+    public ReviewsData(String username,String userimg,String loc, String quality,String service,String environment, Float overall, String image){
         this.loc=loc;
         this.quality=quality;
-        this.overall=overall;
+        this.rating=overall;
         this.image = image;
-        this.env=environment;
-        this.user =user;
+        this.environment=environment;
+        this.username = username;
         this.service =service;
+        this.userimg =userimg;
     }
 
     public String getImage(){
         return this.image;
     }
 
-    public FirebaseUser getUser(){
-        return this.user;
+    public String getUsername(){
+        return this.username;
     }
+    public String getUserImg(){return this.userimg;}
     public String getLoc(){
         return this.loc;
     }
     public String getQuality(){
         return this.quality;
     }
-    public String getEnv(){
-        return this.env;
+    public String getEnvironment(){
+        return this.environment;
     }
 
-    public String getOverall(){
-        return this.overall;
+    public Float getOverall(){
+        return this.rating;
     }
     public String getService(){
         return this.service;

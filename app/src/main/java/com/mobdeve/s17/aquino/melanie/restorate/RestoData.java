@@ -28,7 +28,7 @@ public class RestoData {
         return this.name;
     }
 
-    public String getType(){
+    public String getFoodtype(){
         return this.foodtype;
     }
 

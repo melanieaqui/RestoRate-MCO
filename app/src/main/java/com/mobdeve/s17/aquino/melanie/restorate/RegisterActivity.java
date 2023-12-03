@@ -48,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
         txt_error =findViewById(R.id.txt_error);
         textInputLayout_email = (TextInputLayout) findViewById(R.id.textInputLayout_email);
         textInputLayout_pass = (TextInputLayout) findViewById(R.id.textInputLayout_pass);
-        textInputLayout_confirm = (TextInputLayout) findViewById(R.id.textInputLayout_confirm);
+        textInputLayout_confirm = (TextInputLayout) findViewById(R.id.textInputLayout_login_pass);
 
 
     }

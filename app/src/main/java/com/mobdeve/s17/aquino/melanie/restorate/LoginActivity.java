@@ -1,7 +1,5 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
             txt_email = (EditText) findViewById(R.id.txt_email);
             txt_pass = (EditText) findViewById(R.id.txt_pass);
             textInputLayout_email = (TextInputLayout) findViewById(R.id.textInputLayout_email);
-            textInputLayout_pass = (TextInputLayout) findViewById(R.id.textInputLayout_confirm);
+            textInputLayout_pass = (TextInputLayout) findViewById(R.id.textInputLayout_login_pass);
             mAuth = FirebaseAuth.getInstance();
 
 
