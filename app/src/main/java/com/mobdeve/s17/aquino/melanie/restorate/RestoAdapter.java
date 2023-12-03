@@ -1,9 +1,12 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
+import static java.lang.String.valueOf;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +42,10 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
         final RestoData RestoDataList = restoData.get(position);
         holder.restoName.setText(RestoDataList.getName());
         holder.restoType.setText(RestoDataList.getType());
-        Picasso.with(context).load(Uri.parse(RestoDataList.getImage())).into(holder.restoImage);
+       // Log.i("get_type result",RestoDataList.getType().toString());
+        if (RestoDataList.getImage()!=null)
+            Picasso.with(context).load(Uri.parse(RestoDataList.getImage())).into(holder.restoImage);
+        holder.restoRating.setText(valueOf(RestoDataList.getRating()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             /* TODO Call an intent for OrderActivity allowing you to order food */
@@ -48,12 +54,14 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent (context, ViewRestoActivity.class);
-
-
+                intent.putExtra("RESTO_NAME",RestoDataList.getName());
+                intent.putExtra("RESTO_TYPE",RestoDataList.getType());
+                intent.putExtra("RESTO_IMAGE",RestoDataList.getImage());
+                intent.putExtra("RESTO_RATING",RestoDataList.getRating());
                 context.startActivity(intent);
 
                 /* Remove this and replace it with an intent call*/
-                //Toast.makeText(context, "TODO: Call OrderActivity via intent and order "+myFoodDataList.getFoodName(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "")
             }
         });
     }
@@ -75,8 +83,8 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
             super(itemView);
             restoImage = itemView.findViewById(R.id.resto_image);
             restoName = itemView.findViewById(R.id.resto_name);
-            restoType = itemView.findViewById(R.id.resto_type);
-            //restoRating = itemView.findViewById(R.id.resto_rating);
+            restoType = itemView.findViewById(R.id.txt_resto_type);
+            restoRating = itemView.findViewById(R.id.resto_rating);
         }
     }
 

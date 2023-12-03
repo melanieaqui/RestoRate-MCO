@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,6 +25,7 @@ public class BookmarkActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     RestoAdapter bRestoAdapter;
     ArrayList<RestoData> RestaurantArrayList = new ArrayList<>();
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -35,13 +38,7 @@ public class BookmarkActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         db = FirebaseFirestore.getInstance();
-
-        //RestoData[] myRestoData = new RestoData[]{
-        //        new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
-        //        new RestoData("Mang Inasal","Grilled Foods",R.drawable.manginasal,7.4),
-
-       // };
-
+        EventChange();
         bRestoAdapter = new RestoAdapter(RestaurantArrayList,BookmarkActivity.this);
         recyclerView.setAdapter(bRestoAdapter);
 
@@ -52,7 +49,7 @@ public class BookmarkActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.bookmark);
     }
     private void EventChange() {
-        db.collection("bookmarks").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("/users/"+user.getUid()+"/bookmarks").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(error!=null){
@@ -61,7 +58,7 @@ public class BookmarkActivity extends AppCompatActivity {
                 }
                 for(DocumentChange dc : value.getDocumentChanges()){
                     if(dc.getType()==DocumentChange.Type.ADDED){
-                        RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
+                       RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
                     }
                 }
                 bRestoAdapter.notifyDataSetChanged();

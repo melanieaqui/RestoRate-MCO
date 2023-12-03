@@ -23,8 +23,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         txt_user_name = findViewById(R.id.txt_user_name);
-        txt_email_display =findViewById(R.id.txt_email_display);
-        img_prof_img =findViewById(R.id.img_prof_img);
+        txt_email_display =findViewById(R.id.txt_email_display);         img_prof_img =findViewById(R.id.img_prof_img);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
         if (user!=null){

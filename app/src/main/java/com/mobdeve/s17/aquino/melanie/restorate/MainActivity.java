@@ -47,18 +47,11 @@ public class MainActivity extends AppCompatActivity  {
 
         recyclerView = findViewById(R.id.main_recyclerView);
         db = FirebaseFirestore.getInstance();
-        recyclerView.setHasFixedSize(true);
+       // recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         myRestoAdapter = new RestoAdapter(RestaurantArrayList,MainActivity.this);
 
         EventChange();
-        /*RestoData[] myRestoData = new RestoData[]{
-                new RestoData("Jollibee","Fast Food",R.drawable.jollibee,6.6),
-                new RestoData("ChowKing","Chinese Inspired Foods.",R.drawable.chowking,9.7),
-                new RestoData("Mang Inasal","Grilled Foods",R.drawable.manginasal,7.4),
-                new RestoData("Greewnwich","Pizza and Pasta",R.drawable.greenwich,6.4),
-
-        };*/
         recyclerView.setAdapter(myRestoAdapter);
 
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
@@ -68,7 +61,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void EventChange() {
-        db.collection("restaurant").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("restaurants").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(error!=null){
@@ -77,7 +70,10 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 for(DocumentChange dc : value.getDocumentChanges()){
                     if(dc.getType()==DocumentChange.Type.ADDED){
-                        RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
+                       // dc.getDocument().get("")
+                         RestoData data = (dc.getDocument().toObject(RestoData.class));
+                         data.setFoodtype(dc.getDocument().get("foodtype").toString());
+                        RestaurantArrayList.add(data);
                     }
                 }
                 myRestoAdapter.notifyDataSetChanged();

@@ -71,7 +71,7 @@ public class AddRestoActivity extends AppCompatActivity {
     TextInputLayout textInputLayer_name;
     TextInputLayout textInputLayout_food;
     String currentPhotoPath;
-    Uri downloadUri;
+    String downloadUri;
   //  FirebaseStorage storage;
 
     private Uri imageUri = null;
@@ -143,8 +143,6 @@ public class AddRestoActivity extends AppCompatActivity {
             public void onClick(View v){
                 imageUri =null;
                 Intent takePictureIntent = new Intent();
-
-                Log.i("MEssage", "I am at takepicture");
                 takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
                 File photoFile = null;
                 try {
@@ -171,11 +169,11 @@ public class AddRestoActivity extends AppCompatActivity {
                 Log.i("MEssage", "creating image");
 
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "PNG_" + timeStamp + "_" + txt_restoname.getText().toString();
+                String imageFileName = "JPG_" + timeStamp + "_" + txt_restoname.getText().toString();
                 File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 File image = File.createTempFile(
                         imageFileName,  /* prefix */
-                        ".png",         /* suffix */
+                        ".jpg",         /* suffix */
                         storageDir      /* directory */
                 );
 
@@ -205,10 +203,9 @@ public class AddRestoActivity extends AppCompatActivity {
         // Create a new user with a first and last name
 
         if (allFilled()==true && imageUri!=null){
-
-           // ProgressDialog progressDialog = new ProgressDialog(this);
-           // progressDialog.setTitle("Uploading...");
-           // progressDialog.show();
+            progressDialog = new ProgressDialog(AddRestoActivity.this);
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = (storage.getReference());
@@ -216,7 +213,6 @@ public class AddRestoActivity extends AppCompatActivity {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] data = baos.toByteArray();
             UploadTask uploadTask = RestoImagesRef.putBytes(data);
-            StorageReference RestoRef = storageRef.child("resto_images/"+imageUri.getLastPathSegment());
             uploadTask = RestoImagesRef.putFile(imageUri);
 
             // Register observers to listen for when the download is done or if it fails
@@ -234,7 +230,36 @@ public class AddRestoActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
-                        downloadUri = task.getResult();
+                        downloadUri = task.getResult().toString();
+                        Map<String, Object> restaurant = new HashMap<>();
+                        restaurant.put("name", txt_restoname.getText().toString());
+                        restaurant.put("foodtype", txt_food_type.getText().toString());
+                        restaurant.put("image",downloadUri);
+                        db.collection("restaurants")
+                                .add(restaurant)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        progressDialog.setCanceledOnTouchOutside(true);
+                                        progressDialog.setMessage("Success!");
+                                        progressDialog.dismiss();
+                                        Log.d("Success", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        progressDialog.setCanceledOnTouchOutside(true);
+                                        progressDialog.setMessage("Error occurred. Please try again.");
+                                        progressDialog.dismiss();
+
+                                        Log.w("Failure", "Error adding document", e);
+                                    }
+                                });
+                        Intent back =new Intent(getApplicationContext(),MainActivity.class);
+                        startActivity(back);
+                        finish();
+
                     } else {
                         // Handle failures
                         // ...
@@ -242,27 +267,7 @@ public class AddRestoActivity extends AppCompatActivity {
                 }
             });
 
-            Map<String, Object> restaurant = new HashMap<>();
-            restaurant.put("name", txt_restoname.getText().toString());
-            restaurant.put("food_type", txt_food_type.getText().toString());
-            restaurant.put("image",downloadUri);
-            db.collection("restaurant")
-                    .add(restaurant)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d("Success", "DocumentSnapshot added with ID: " + documentReference.getId());
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("Failure", "Error adding document", e);
-                        }
-                    });
-            //Intent back =new Intent(getApplicationContext(),MainActivity.class);
-            //startActivity(back);
-            //finish();
+
 
         }
         else if(imageUri==null) {
@@ -270,12 +275,6 @@ public class AddRestoActivity extends AppCompatActivity {
             Toast.makeText(
                     AddRestoActivity.this,
                     "Please supply an image to add restaurant",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }else if(allFilled()==false){
-            Toast.makeText(
-                    AddRestoActivity.this,
-                    "Please Fill up all fields",
                     Toast.LENGTH_SHORT
             ).show();
         }

@@ -26,8 +26,8 @@
 
                 <ImageView
                     android:id="@+id/image_profile"
-                    android:layout_width="206dp"
-                    android:layout_height="149dp"
+                    android:layout_width="64dp"
+                    android:layout_height="59dp"
                     app:srcCompat="@drawable/chowking"
                     tools:src="@tools:sample/avatars"
                     tools:srcCompat="@tools:sample/avatars" />
@@ -85,7 +85,7 @@
             <ImageView
                 android:id="@+id/image_review"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="157dp"
                 app:srcCompat="@drawable/chickenjoy" />
 
         </LinearLayout>
