@@ -5,13 +5,7 @@ import static java.lang.String.valueOf;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,10 +21,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -41,10 +33,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -57,7 +47,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class AddRestoActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -73,6 +62,7 @@ public class AddRestoActivity extends AppCompatActivity {
     String currentPhotoPath;
     String downloadUri;
   //  FirebaseStorage storage;
+  boolean exists;
 
     private Uri imageUri = null;
 
@@ -115,8 +105,8 @@ public class AddRestoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_resto);
         btn_submitted = findViewById(R.id.btn_submit);
-        txt_food_type = findViewById(R.id.txt_food_type);
-        txt_restoname = findViewById(R.id.txt_restoname);
+        txt_food_type = findViewById(R.id.txt_food_quality);
+        txt_restoname = findViewById(R.id.txt_branch);
         btn_choose = findViewById(R.id.btn_choose);
         btn_take = findViewById(R.id.btn_take);
         img_resto = findViewById(R.id.img_resto);
@@ -197,12 +187,32 @@ public class AddRestoActivity extends AppCompatActivity {
         return true;
     }
 
+    public void Check (View v){
+        FirestoreHelper.QueryResult result = new FirestoreHelper.QueryResult();
+        FirestoreHelper.queryForItem(db, "restaurants", "name", txt_restoname.getText().toString().toUpperCase(), result, new FirestoreHelper.OnQueryCompleteListener() {
+            @Override
+            public void onQueryComplete(boolean found) {
+                // Access the result using result.isFound()
+                if (result.isFound()) {
+                    // Item found
+                    Log.d("Firestore", "Item found");
+                    textInputLayer_name.setError("Restaurant Name found");
 
+                } else {
+                    // Item not found
+                    Log.d("Firestore", "Item not found");
+                    submit(v);
+
+                }
+
+            }
+        });
+    }
 
     public void submit(View v){
-        // Create a new user with a first and last name
+        // Create a new user with a first and last
 
-        if (allFilled()==true && imageUri!=null){
+        if (allFilled()==true && imageUri!=null && exists==false){
             progressDialog = new ProgressDialog(AddRestoActivity.this);
             progressDialog.setTitle("Uploading");
             progressDialog.show();
@@ -232,7 +242,7 @@ public class AddRestoActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         downloadUri = task.getResult().toString();
                         Map<String, Object> restaurant = new HashMap<>();
-                        restaurant.put("name", txt_restoname.getText().toString());
+                        restaurant.put("name", txt_restoname.getText().toString().toUpperCase());
                         restaurant.put("foodtype", txt_food_type.getText().toString());
                         restaurant.put("image",downloadUri);
                         db.collection("restaurants")
@@ -267,8 +277,6 @@ public class AddRestoActivity extends AppCompatActivity {
                 }
             });
 
-
-
         }
         else if(imageUri==null) {
             // Error message when no image was selected. We need at least an image to post.
@@ -281,15 +289,8 @@ public class AddRestoActivity extends AppCompatActivity {
 
 
     }
-    private boolean restoExist(){
-        CollectionReference RestoRef = db.collection("restaurant");
-        Query query = RestoRef.whereEqualTo("name", txt_restoname.getText().toString());
-        if (query!=null){
-            textInputLayer_name.setError("Restaurant Name Already Exists");
-            return true;
-        }
-        return false;
-    }
+
+
     private boolean onItemSelectedListener(MenuItem item) {
         Intent intent;
         if (item.getItemId() == R.id.home) {
@@ -306,8 +307,6 @@ public class AddRestoActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
             finish();
             return true;
-
-
         } else if (item.getItemId() == R.id.profile) {
             intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);

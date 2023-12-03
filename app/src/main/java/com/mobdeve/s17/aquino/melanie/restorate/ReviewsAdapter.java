@@ -32,7 +32,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
     public void onBindViewHolder(@NonNull ReviewsAdapter.ViewHolder holder, int position) {
         final ReviewsData ReviewsDataList = ReviewsData[position];
         holder.reviews_user.setText(ReviewsDataList.getUser().getEmail());
-        holder.reviews_user_image.setImageResource(ReviewsDataList.getUser().getProfile());
+        //holder.reviews_user_image.setImageResource(ReviewsDataList.getUser().getProfile());
 
         holder.reviews_location.setText(ReviewsDataList.getLoc());
         holder.reviews_quality.setText("Qty: "+ReviewsDataList.getQuality());
@@ -40,7 +40,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         holder.reviews_environment.setText("Environment: "+ReviewsDataList.getEnv());
         holder.reviews_overall.setText("Overall: "+ReviewsDataList.getOverall());
 
-        holder.reviews_image.setImageResource(ReviewsDataList.getImage());
+        //holder.reviews_image.setImageResource(ReviewsDataList.getImage());
 
         /**holder.itemView.setOnClickListener(new View.OnClickListener() {
 

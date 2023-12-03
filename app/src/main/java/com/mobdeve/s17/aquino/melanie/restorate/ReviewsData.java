@@ -1,17 +1,19 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class ReviewsData {
     //String name;
-    UserData user;
+    FirebaseUser user;
     String loc;
     String quality;
     String overall;
     String env;
     String service;
-    int image;
+    String image;
 
 
-    public ReviewsData(UserData user, String loc, String quality,String service,String environment, String overall, int image){
+    public ReviewsData(FirebaseUser user,String loc, String quality,String service,String environment, String overall, String image){
         this.loc=loc;
         this.quality=quality;
         this.overall=overall;
@@ -21,11 +23,11 @@ public class ReviewsData {
         this.service =service;
     }
 
-    public int getImage(){
+    public String getImage(){
         return this.image;
     }
 
-    public UserData getUser(){
+    public FirebaseUser getUser(){
         return this.user;
     }
     public String getLoc(){

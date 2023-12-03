@@ -70,17 +70,17 @@ public class ViewRestoActivity extends AppCompatActivity {
 
         UserData sample = new UserData("test@gmail.com", R.drawable.jollibee);
 
-        ReviewsData[] reviewsData = new ReviewsData[]{
-                new ReviewsData(sample, "Pasig", "Tasty Foods!", "Slow service", "Makalat", "6.7", R.drawable.chickenjoy),
-                new ReviewsData(sample, "Manila", "Bland :<", "Slow service", "Clean", "5.3", R.drawable.chickenjoy),
-                new ReviewsData(sample, "Makati", "Everything is too salty", "Slow service", "Clean", "6.0", R.drawable.chickenjoy),
+       // ReviewsData[] reviewsData = new ReviewsData[]{
+        //        new ReviewsData(sample, "Pasig", "Tasty Foods!", "Slow service", "Makalat", "6.7", R.drawable.chickenjoy),
+        //        new ReviewsData(sample, "Manila", "Bland :<", "Slow service", "Clean", "5.3", R.drawable.chickenjoy),
+        //        new ReviewsData(sample, "Makati", "Everything is too salty", "Slow service", "Clean", "6.0", R.drawable.chickenjoy),
 
-        };
+        //};
 
-        ReviewsAdapter myReviewsAdapter = new ReviewsAdapter(reviewsData, this);
-        recyclerView_reviews.setAdapter(myReviewsAdapter);
+       // ReviewsAdapter myReviewsAdapter = new ReviewsAdapter(reviewsData, this);
+        //recyclerView_reviews.setAdapter(myReviewsAdapter);
 
-        bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
+       // bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
 
 
 
@@ -89,7 +89,6 @@ public class ViewRestoActivity extends AppCompatActivity {
         Map<String, Object> restaurant = new HashMap<>();
         restaurant.put("name", txt_view_name.getText().toString());
         restaurant.put("foodtype", txt_type.getText().toString());
-        //restaurant.put("user",user.getEmail().toString());
         restaurant.put("image",restoImage);
 
         db.collection("/users/"+user.getUid()+"/bookmarks")
