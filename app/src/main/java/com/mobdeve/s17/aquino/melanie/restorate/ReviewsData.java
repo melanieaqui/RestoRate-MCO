@@ -14,10 +14,10 @@ public class ReviewsData {
     String environment;
 
     public ReviewsData(){}
-    public ReviewsData(String username,String userimg,String loc, String quality,String service,String environment, Float overall, String image){
+    public ReviewsData(String username,String userimg,String loc, String quality,String service,String environment, Float rating, String image){
         this.loc=loc;
         this.quality=quality;
-        this.rating=overall;
+        this.rating=rating;
         this.image = image;
         this.environment=environment;
         this.username = username;
@@ -43,7 +43,7 @@ public class ReviewsData {
         return this.environment;
     }
 
-    public Float getOverall(){
+    public Float getRating(){
         return this.rating;
     }
     public String getService(){

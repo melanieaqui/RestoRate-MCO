@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         holder.reviews_quality.setText("Qty: "+ReviewsDataList.getQuality());
         holder.reviews_service.setText("Service: "+ReviewsDataList.getService());
         holder.reviews_environment.setText("Environment: "+ReviewsDataList.getEnvironment());
-        holder.reviews_overall.setRating(ReviewsDataList.getOverall());
+        holder.reviews_overall.setRating(ReviewsDataList.getRating());
 
         if(ReviewsDataList.getImage()!=null)
             Picasso.with(context).load(Uri.parse(ReviewsDataList.getUserImg())).into(holder.reviews_user_image);
@@ -101,8 +102,6 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
             reviews_service = itemView.findViewById(R.id.txt_service);
             reviews_environment = itemView.findViewById(R.id.txt_environment);
             reviews_overall = itemView.findViewById(R.id.ratingBar);
-
-
 
 
         }
