@@ -1,5 +1,7 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
+import static java.lang.String.valueOf;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,10 +72,10 @@ public class ViewRestoActivity extends AppCompatActivity {
         String name=prev.getStringExtra("RESTO_NAME");
         restoImage  = prev.getStringExtra("RESTO_IMAGE");
         String type = prev.getStringExtra("RESTO_TYPE");
-//        String rating=prev.getStringExtra("RESTO_RATING");
+        String rating =prev.getStringExtra("RESTO_RATING");
         txt_view_name.setText(name);
         txt_type.setText(type);
-      //  txt_rating.setText(rating);
+        txt_rating.setText(rating);
         Picasso.with(getApplicationContext()).load(Uri.parse(restoImage)).into(img_photo);
 
         //UserData sample = new UserData("test@gmail.com", R.drawable.jollibee);

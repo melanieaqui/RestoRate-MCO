@@ -58,22 +58,19 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         else
             holder.reviews_user_image.setImageResource(R.drawable.ic_profile);
         if(ReviewsDataList.getImage()!=null)
+        {
             Picasso.with(context).load(Uri.parse(ReviewsDataList.getImage())).into(holder.reviews_image);
+
+            //ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) holder.reviews_image.getLayoutParams();
+          //  params.height = 600;
+          // holder.reviews_image.setLayoutParams(params);
+            //
+
+        }
 
         //holder.reviews_image.setImageResource(ReviewsDataList.getImage());
 
-        /**holder.itemView.setOnClickListener(new View.OnClickListener() {
 
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent (context, ViewRestoActivity.class);
-
-
-                context.startActivity(intent);
-
-            }
-        });*/
 
     }
 

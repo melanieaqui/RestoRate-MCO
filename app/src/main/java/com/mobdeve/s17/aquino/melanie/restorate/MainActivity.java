@@ -1,5 +1,7 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
+import static java.lang.String.valueOf;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void EventChange() {
-        db.collection("restaurants").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("restaurants").orderBy("name").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(error!=null){
@@ -70,9 +72,17 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 for(DocumentChange dc : value.getDocumentChanges()){
                     if(dc.getType()==DocumentChange.Type.ADDED){
-                       // dc.getDocument().get("")
                         RestoData data = (dc.getDocument().toObject(RestoData.class));
                         RestaurantArrayList.add(data);
+                    }
+                    if(dc.getType()==DocumentChange.Type.MODIFIED){
+                        RestoData data = (dc.getDocument().toObject(RestoData.class));
+                        //RestaurantArrayList.remove(dc.getOldIndex());
+                        RestaurantArrayList.set(dc.getOldIndex(),data);
+
+                    }
+                    if (dc.getType()==DocumentChange.Type.REMOVED){
+                        RestaurantArrayList.remove(dc.getOldIndex());
                     }
                 }
                 myRestoAdapter.notifyDataSetChanged();

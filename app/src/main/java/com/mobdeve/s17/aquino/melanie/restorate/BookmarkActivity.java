@@ -60,7 +60,14 @@ public class BookmarkActivity extends AppCompatActivity {
                     if(dc.getType()==DocumentChange.Type.ADDED){
                        RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
                     }
+                    if(dc.getType()==DocumentChange.Type.MODIFIED){
+                        RestoData data = (dc.getDocument().toObject(RestoData.class));
+                        RestaurantArrayList.set(dc.getOldIndex(),data);
+
+
+                    }
                 }
+
                 bRestoAdapter.notifyDataSetChanged();
             }
         });

@@ -48,8 +48,6 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
         holder.restoRating.setText(valueOf(RestoDataList.getRating()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
-            /* TODO Call an intent for OrderActivity allowing you to order food */
-
 
             @Override
             public void onClick(View v) {
@@ -57,7 +55,7 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
                 intent.putExtra("RESTO_NAME",RestoDataList.getName());
                 intent.putExtra("RESTO_TYPE",RestoDataList.getFoodtype());
                 intent.putExtra("RESTO_IMAGE",RestoDataList.getImage());
-                intent.putExtra("RESTO_RATING",RestoDataList.getRating());
+                intent.putExtra("RESTO_RATING",valueOf(RestoDataList.getRating()));
                 context.startActivity(intent);
 
                 /* Remove this and replace it with an intent call*/

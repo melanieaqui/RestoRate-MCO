@@ -11,7 +11,7 @@ public class RestoData {
     public RestoData(){
 
     }
-    public RestoData(String foodtype,  String image,String name) {
+    public RestoData(String foodtype,  String image,String name,Double rating) {
         this.name = name;
         this.foodtype = foodtype;
         this.image = image;

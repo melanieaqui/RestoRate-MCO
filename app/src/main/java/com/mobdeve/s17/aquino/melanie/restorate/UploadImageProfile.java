@@ -48,7 +48,7 @@ public class UploadImageProfile extends AppCompatActivity {
         btn_gallery = findViewById(R.id.btn_gallery);
         btn_camera = findViewById(R.id.btn_camera);
         btn_skip = findViewById(R.id.btn_skip);
-        btn_upload = findViewById(R.id.btn_upload);
+        btn_upload = findViewById(R.id.btn_review_upload);
         btn_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
