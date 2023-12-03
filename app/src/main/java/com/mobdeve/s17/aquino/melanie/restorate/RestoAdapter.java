@@ -19,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> {
     ArrayList<RestoData> restoData =new ArrayList<>();
+    ArrayList<RestoData> filteredNameList =new ArrayList<>();
+
     Context context;
 
     public RestoAdapter(ArrayList<RestoData> restoData, Activity activity) {
@@ -64,7 +67,10 @@ public class RestoAdapter extends RecyclerView.Adapter<RestoAdapter.ViewHolder> 
         });
     }
 
-
+    public void setFilteredList(ArrayList<RestoData>filtered){
+        this.restoData = filtered;
+        notifyDataSetChanged();
+    }
     @Override
     public int getItemCount() {
         return restoData.size();

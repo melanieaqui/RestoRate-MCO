@@ -1,6 +1,7 @@
 package com.mobdeve.s17.aquino.melanie.restorate;
 
 import static java.lang.String.valueOf;
+import static java.util.Locale.filter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
-
+    SearchView searchView;
     BottomNavigationView bottomNavigationView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     ArrayList<RestoData>RestaurantArrayList = new ArrayList<>();
@@ -44,6 +49,8 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        searchView= findViewById(R.id.searchView);
+        searchView.clearFocus();
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
@@ -59,8 +66,38 @@ public class MainActivity extends AppCompatActivity  {
         bottomNavigationView.setOnItemSelectedListener(this::onItemSelectedListener);
 
         bottomNavigationView.setSelectedItemId(R.id.home);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String queryString) {
+               // myRestoAdapter.getFilter().filter(queryString);
+                filterList(queryString);
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String queryString) {
+                return false;
+            }
+        });
     }
+
+
+    private void filterList(String queryString) {
+        ArrayList<RestoData>filteredList = new ArrayList<>();
+        for(RestoData item: RestaurantArrayList){
+            if(item.getName().toLowerCase().contains(queryString.toLowerCase())){
+                filteredList.add(item);
+            }else if(queryString==null){
+                filteredList=RestaurantArrayList;
+            }
+
+            else if(!filteredList.isEmpty()){
+                myRestoAdapter.setFilteredList(filteredList);
+
+            }
+        }
+    }
+
 
     private void EventChange() {
         db.collection("restaurants").orderBy("name").addSnapshotListener(new EventListener<QuerySnapshot>() {
