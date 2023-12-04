@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.SearchView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 
 public class BookmarkActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
+    SearchView searchView;
     RestoAdapter bRestoAdapter;
     ArrayList<RestoData> RestaurantArrayList = new ArrayList<>();
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -32,6 +34,8 @@ public class BookmarkActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookmark);
+        searchView= findViewById(R.id.searchView);
+
 
         RecyclerView recyclerView = findViewById(R.id.bookmark_recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -47,7 +51,33 @@ public class BookmarkActivity extends AppCompatActivity {
 
 
         bottomNavigationView.setSelectedItemId(R.id.bookmark);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String queryString) {
+                filterList(queryString);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String queryString) {
+
+                filterList(queryString);
+                return true;
+            }
+        });
     }
+
+
+    private void filterList(String queryString) {
+        ArrayList<RestoData>filteredList = new ArrayList<>();
+        for(RestoData item: RestaurantArrayList) {
+            if (item.getName().toLowerCase().contains(queryString.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        bRestoAdapter.setFilteredList(filteredList);
+    }
+
     private void EventChange() {
         db.collection("/users/"+user.getUid()+"/bookmarks").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -60,12 +90,7 @@ public class BookmarkActivity extends AppCompatActivity {
                     if(dc.getType()==DocumentChange.Type.ADDED){
                        RestaurantArrayList.add(dc.getDocument().toObject(RestoData.class));
                     }
-                    if(dc.getType()==DocumentChange.Type.MODIFIED){
-                        RestoData data = (dc.getDocument().toObject(RestoData.class));
-                        RestaurantArrayList.set(dc.getOldIndex(),data);
 
-
-                    }
                 }
 
                 bRestoAdapter.notifyDataSetChanged();

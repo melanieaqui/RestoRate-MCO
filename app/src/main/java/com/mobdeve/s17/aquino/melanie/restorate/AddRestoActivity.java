@@ -245,6 +245,7 @@ public class AddRestoActivity extends AppCompatActivity {
                         restaurant.put("name", txt_restoname.getText().toString().toUpperCase());
                         restaurant.put("foodtype", txt_food_type.getText().toString());
                         restaurant.put("image",downloadUri);
+                        restaurant.put("rating",0); //default values
                         db.collection("restaurants")
                                 .add(restaurant)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

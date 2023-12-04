@@ -51,6 +51,7 @@ public class ViewRestoActivity extends AppCompatActivity {
     ArrayList<ReviewsData> reviewsList = new ArrayList<>();
     String id;
     ReviewsAdapter myReviewsAdapter;
+    //float rating;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_resto);
@@ -73,19 +74,12 @@ public class ViewRestoActivity extends AppCompatActivity {
         restoImage  = prev.getStringExtra("RESTO_IMAGE");
         String type = prev.getStringExtra("RESTO_TYPE");
         String rating =prev.getStringExtra("RESTO_RATING");
+
         txt_view_name.setText(name);
         txt_type.setText(type);
         txt_rating.setText(rating);
         Picasso.with(getApplicationContext()).load(Uri.parse(restoImage)).into(img_photo);
 
-        //UserData sample = new UserData("test@gmail.com", R.drawable.jollibee);
-
-       // ReviewsData[] reviewsData = new ReviewsData[]{
-        //        new ReviewsData(sample, "Pasig", "Tasty Foods!", "Slow service", "Makalat", "6.7", R.drawable.chickenjoy),
-        //        new ReviewsData(sample, "Manila", "Bland :<", "Slow service", "Clean", "5.3", R.drawable.chickenjoy),
-        //        new ReviewsData(sample, "Makati", "Everything is too salty", "Slow service", "Clean", "6.0", R.drawable.chickenjoy),
-
-        //};
 
         myReviewsAdapter = new ReviewsAdapter(reviewsList, this);
         recyclerView_reviews.setAdapter(myReviewsAdapter);
@@ -145,24 +139,20 @@ public class ViewRestoActivity extends AppCompatActivity {
         restaurant.put("name", txt_view_name.getText().toString());
         restaurant.put("foodtype", txt_type.getText().toString());
         restaurant.put("image",restoImage);
+        restaurant.put("rating",Float.parseFloat(txt_rating.getText().toString()));
 
         db.collection("/users/"+user.getUid()+"/bookmarks")
                 .add(restaurant)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        //progressDialog.setCanceledOnTouchOutside(true);
-                       // progressDialog.setMessage("Success!");
-                       // progressDialog.dismiss();
+
                         Log.d("Success", "DocumentSnapshot added with ID: " + documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        //progressDialog.setCanceledOnTouchOutside(true);
-                        //progressDialog.setMessage("Error occurred. Please try again.");
-                        //progressDialog.dismiss();
 
                         Log.w("Failure", "Error adding document", e);
                     }

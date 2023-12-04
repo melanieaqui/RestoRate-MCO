@@ -33,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.OrderBy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,9 @@ public class MainActivity extends AppCompatActivity  {
 
             @Override
             public boolean onQueryTextChange(String queryString) {
-                return false;
+
+                filterList(queryString);
+                return true;
             }
         });
     }
@@ -84,23 +87,17 @@ public class MainActivity extends AppCompatActivity  {
 
     private void filterList(String queryString) {
         ArrayList<RestoData>filteredList = new ArrayList<>();
-        for(RestoData item: RestaurantArrayList){
-            if(item.getName().toLowerCase().contains(queryString.toLowerCase())){
+        for(RestoData item: RestaurantArrayList) {
+            if (item.getName().toLowerCase().contains(queryString.toLowerCase())) {
                 filteredList.add(item);
-            }else if(queryString==null){
-                filteredList=RestaurantArrayList;
-            }
-
-            else if(!filteredList.isEmpty()){
-                myRestoAdapter.setFilteredList(filteredList);
-
             }
         }
+        myRestoAdapter.setFilteredList(filteredList);
     }
 
 
     private void EventChange() {
-        db.collection("restaurants").orderBy("name").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("restaurants").orderBy("rating", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(error!=null){
@@ -112,13 +109,13 @@ public class MainActivity extends AppCompatActivity  {
                         RestoData data = (dc.getDocument().toObject(RestoData.class));
                         RestaurantArrayList.add(data);
                     }
-                    if(dc.getType()==DocumentChange.Type.MODIFIED){
+                    else if(dc.getType()==DocumentChange.Type.MODIFIED){
                         RestoData data = (dc.getDocument().toObject(RestoData.class));
                         //RestaurantArrayList.remove(dc.getOldIndex());
                         RestaurantArrayList.set(dc.getOldIndex(),data);
 
                     }
-                    if (dc.getType()==DocumentChange.Type.REMOVED){
+                    else if (dc.getType()==DocumentChange.Type.REMOVED){
                         RestaurantArrayList.remove(dc.getOldIndex());
                     }
                 }
